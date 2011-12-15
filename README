@@ -1,0 +1,24 @@
+Thu Dec 15 11:59:00 GMT 2011
+
+This script is provided under the BSD license.
+
+You will need pyinotify to make this work. Once installed, you just 
+need to specify what directory you want to watch. For now it takes 
+two arguments: 
+
+[1] mode you want to run the script as:
+1 - monitors OPENED files
+2 - monitors ACCESSED files
+3 - monitors CREATED files
+4 - monitors OPENED and ACCESSED files
+
+[2] directory you wish to monitor (lose the trailing / in the end of
+the path)
+
+Make sure you edit the script to set your mail address and smtp host.
+
+Then you can run it like: ./snitch.py 2 /tmp
+
+Any question please send a mail to frlinux@frlinux.net
+
+
