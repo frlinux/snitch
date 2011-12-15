@@ -4,36 +4,44 @@ import sys
 import pyinotify
 import smtplib
 
-mailcontent = ''
 frommail=""
 tomail=""
+subjectmail="Snitch: file notification\n"
 smtphost=""
-subjectmail="Snitch: file accessed!\n"
 
 mode=sys.argv[1]
 
 # mode 1 - OPENED
 # mode 2 - ACCESSED
 # mode 3 - CREATED
-# mode 4 - ACCESSED and OPENED - verbose /!\
 if mode == "1":
 	pynotifymasks = pyinotify.IN_OPEN
 if mode == "2":
 	pynotifymasks = pyinotify.IN_ACCESS
 if mode == "3":
 	pynotifymasks = pyinotify.IN_CREATE
-if mode == "4":
-	pynotifymasks = pyinotify.IN_OPEN | pyinotify.IN_ACCESS
 
 watchmgr = pyinotify.WatchManager()
 
+def sendmail(mailcontent):
+	s = smtplib.SMTP(smtphost)
+	message = "From:" + frommail + "\nTo:" + tomail + "\nSubject:" + subjectmail + "\n" + mailcontent
+	s.sendmail(frommail,tomail,message)
+	s.quit()
+
 class ProcessManager(pyinotify.ProcessEvent):
+	global mailcontent
+	mailcontent = ''
+
 	def process_IN_ACCESS(self, event):
-		s = smtplib.SMTP(smtphost)
 		mailcontent = "Accessed: %s " % os.path.join(event.path, event.name)
-		message = "From:" + frommail + "\nTo:" + tomail + "\nSubject:" + subjectmail + "\n" + mailcontent
-		s.sendmail(frommail,tomail,message)
-		s.quit()
+		sendmail(mailcontent)
+	def process_IN_CREATE(self, event):
+		mailcontent = "Created: %s " % os.path.join(event.path, event.name)
+		sendmail(mailcontent)
+	def process_IN_OPEN(self, event):
+		mailcontent = "Opened: %s " % os.path.join(event.path, event.name)
+		sendmail(mailcontent)
 
 notifier = pyinotify.Notifier(watchmgr, ProcessManager())
 
