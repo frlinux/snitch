@@ -19,6 +19,6 @@ Make sure you edit the script to set your mail address and smtp host.
 
 Then you can run it like: ./snitch.py 2 /tmp
 
-Any question please send a mail to frlinux@frlinux.net
+Any question please send a mail
 
 
